@@ -246,6 +246,41 @@ class ConnexionTests(TestCase):
         self.assertContains(r, "c2.lovelyhome.io")
 
 
+class ProductionSettingsTests(TestCase):
+    """production.py se charge avec un environnement complet, en mode smtp et en mode fichier."""
+
+    ENV = dict(
+        SECRET_KEY="s", ALLOWED_HOST="gemlogic.lovelyhome.io", DATABASE_NAME="v", DATABASE_USER="v", DATABASE_PASSWORD="p",
+        AWX_URL="https://awx.test", AWX_TOKEN="t", AWX_ONBOARD_WORKFLOW_ID="7", AWX_CALLBACK_SECRET="c",
+        APP_REPO="git@github.com:spawn451/temoin.git", APP_VERSION="v1.0.0", SSO_KEY="k",
+    )
+
+    def _load(self, **extra):
+        import importlib
+        import sys
+
+        with mock.patch.dict("os.environ", {**self.ENV, **extra}, clear=False):
+            # base.py lit l'environnement à l'import : on le recharge aussi.
+            for name in ("config.settings.production", "config.settings.base"):
+                sys.modules.pop(name, None)
+            return importlib.import_module("config.settings.production")
+
+    def test_mode_fichier_sans_smtp(self):
+        m = self._load(EMAIL_MODE="fichier")
+        self.assertEqual(m.EMAIL_BACKEND, "django.core.mail.backends.filebased.EmailBackend")
+        self.assertTrue(m.EMAIL_FILE_PATH.endswith("mails"))
+
+    def test_mode_smtp_exige_email_host(self):
+        with self.assertRaises(KeyError):
+            self._load()
+        m = self._load(EMAIL_HOST="smtp.test")
+        self.assertEqual(m.EMAIL_BACKEND, "django.core.mail.backends.smtp.EmailBackend")
+
+    def test_variable_manquante_refusee(self):
+        with self.assertRaisesRegex(RuntimeError, "SSO_KEY"):
+            self._load(EMAIL_MODE="fichier", SSO_KEY="")
+
+
 @override_settings(**SETTINGS)
 class PurgeTests(TestCase):
     def test_purge(self):

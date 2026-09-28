@@ -44,7 +44,9 @@ python manage.py runserver
 ```
 
 Sans réglage, `manage.py` utilise `config.settings.dev` : SQLite, `DEBUG`,
-e-mails dans la console. Sans `AWX_URL`, le clic de confirmation affiche
+e-mails dans la console. Sur le serveur, `EMAIL_MODE=fichier` dans le `.env`
+écrit les e-mails dans `/var/www/vitrine/mails/` au lieu de les envoyer :
+pour tester sans fournisseur SMTP. Sans `AWX_URL`, le clic de confirmation affiche
 « réessayez dans un instant » et garde la réservation.
 
 ## Installation sur le serveur (Ubuntu 24.04, une seule machine)
