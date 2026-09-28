@@ -35,6 +35,7 @@ TEMPLATES = [
             "context_processors": [
                 "django.template.context_processors.request",
                 "guichet.context_processors.plateforme",
+                "guichet.context_processors.static_version",
             ]
         },
     },

@@ -86,6 +86,7 @@ class InscriptionTests(TestCase):
         self.assertContains(r, "Créer un compte GemLogic")
         self.assertContains(r, "Aucune carte bancaire requise")
         self.assertContains(r, 'data-domain="lovelyhome.io"')
+        self.assertContains(r, "style.css?v=")
 
     def test_reservation_expiree_liberee(self):
         Reservation.objects.create(slug="client1", email="x@y.test", expires_at=timezone.now() - timedelta(minutes=1))
