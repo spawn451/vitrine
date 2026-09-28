@@ -120,11 +120,13 @@ new_client:
   admin_password_hash: <make_password() du mot de passe saisi>
 ```
 
-Aujourd'hui `onboard-client.yml` lit les sept premières clés et ignore
-`admin_email` et `admin_password_hash` : l'espace est créé, mais sans premier
-compte tant que le playbook ne les écrit pas dans le vault et que
-l'application n'a pas la commande `bootstrap` (voir ci-dessous). Le jeton SSO
-est alors refusé par l'espace et le visiteur atterrit sur `/login/`.
+`onboard-client.yml` chiffre `admin_email` et `admin_password_hash` dans le
+vault avec les autres secrets ; `env.j2` les pose dans le `.env` de l'espace
+(`BOOTSTRAP_ADMIN_EMAIL`, `BOOTSTRAP_ADMIN_PASSWORD_HASH`) avec `SSO_KEY`
+(`vault_sso_key`) ; le rôle `deploy` lance `manage.py bootstrap` après
+`migrate` si l'application a la commande. Tant qu'elle ne l'a pas, l'espace
+est créé sans premier compte, le jeton SSO est refusé et le visiteur atterrit
+sur `/login/`.
 
 ## Ce que l'application cliente doit fournir
 
