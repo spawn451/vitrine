@@ -86,11 +86,13 @@ sudo nginx -t && sudo systemctl reload nginx
 curl -H 'Host: gemlogic.lovelyhome.io' http://127.0.0.1/health/     # ok
 ```
 
-**Exposition.** Un tunnel Cloudflare propre à ce serveur (`cloudflared`),
-route publique `gemlogic.lovelyhome.io` → `http://localhost:80`. Dans la
-zone DNS, l'enregistrement `gemlogic` (CNAME vers le tunnel, proxied) prime
-sur le wildcard `*.lovelyhome.io` qui pointe vers S1/S2. Rien à changer sur
-les tunnels de la plateforme ni sur le load balancer.
+**Exposition.** Pas de tunnel Cloudflare sur ce serveur : il est dans le
+homelab, derrière HAProxy (OPNsense), qui lui transmet le trafic sur le port
+80 en conservant l'en-tête `Host` et en faisant son contrôle de santé sur
+`/health/` avec ce même `Host`. Dans la zone DNS, l'enregistrement
+`A gemlogic` → IP publique (proxied) prime sur le wildcard `*.lovelyhome.io`
+qui pointe vers S1/S2. Rien à changer sur les tunnels de la plateforme ni sur
+le load balancer. Détail : guide-installation-vitrine §9.
 
 **Mise à jour.** `git pull` (ou checkout d'un tag), `pip install -r
 requirements.txt` si les dépendances ont changé, `migrate`, `collectstatic`,
