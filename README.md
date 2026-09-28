@@ -52,7 +52,9 @@ e-mails dans la console. Sans `AWX_URL`, le clic de confirmation affiche
 Utilisateur `vitrine`, code dans `/var/www/vitrine/src`, venv dans
 `/var/www/vitrine/venv`, réglages dans `/var/www/vitrine/.env`, PostgreSQL
 local. Tout est fait à la main ici ; un playbook `vitrine.yml` dans
-`plateforme` pourra le reprendre.
+`plateforme` pourra le reprendre. La procédure pas à pas, avec les
+vérifications, le tunnel Cloudflare et la configuration AWX, est dans le
+vault : `Guide/guide-installation-vitrine.md`. Ci-dessous, le condensé.
 
 ```bash
 sudo apt install -y python3-venv postgresql nginx git
@@ -101,7 +103,7 @@ puis `systemctl reload vitrine` : Gunicorn recharge sans coupure.
 | Utilisateur `vitrine` | Utilisateur AWX normal, sans rôle d'organisation. Sur le modèle de workflow `onboard-client` : Accès → Ajouter → rôle **Exécuter**. Il ne peut rien lancer d'autre |
 | Jeton | Connecté en `vitrine` : Utilisateurs → vitrine → Jetons → Ajouter, portée **Écriture**, sans application. La valeur n'est affichée qu'une fois : `AWX_TOKEN` |
 | Id du workflow | Dans l'URL du modèle de workflow : `/#/templates/workflow_job_template/<id>/` → `AWX_ONBOARD_WORKFLOW_ID` |
-| Enquête | Sur `onboard-client`, une enquête (survey) qui déclare `db_password`, `django_secret_key` et `admin_password_hash` en type Mot de passe, pour qu'AWX les affiche `$encrypted$`. Sans elle, ils passent en `extra_vars` et l'onglet Variables du job les montre en clair |
+| Enquête | Pas pour l'instant : une enquête ne masque (`$encrypted$`) que des variables de premier niveau, et l'entrée est le dictionnaire `new_client`. L'onglet Variables du job montre donc `db_password`, `django_secret_key` et `admin_password_hash` en clair aux utilisateurs AWX qui voient les jobs. Aplatir l'entrée (vitrine + playbook) dans une seconde version |
 | Notification | Notifications → Ajouter : type **Webhook**, URL `https://gemlogic.lovelyhome.io/awx/callback/`, en-têtes HTTP `{"X-Vitrine-Secret": "<AWX_CALLBACK_SECRET>"}`, méthode POST. Puis sur le modèle de workflow `onboard-client`, onglet Notifications : activer **Succès** et **Échec**. Le corps par défaut contient `id` et `status`, c'est ce que lit la vitrine |
 | Sans notification | La vitrine s'en passe : passé `AWX_POLL_AFTER_SECONDS` (60 s), `/statut/` interroge `GET /api/v2/workflow_jobs/<id>/` avec le jeton. La notification rend juste la fin visible plus tôt |
 
