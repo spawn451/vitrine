@@ -1,0 +1,23 @@
+{% extends "guichet/base.html" %}
+{% block title %}GemLogic — votre espace en une minute{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1>Votre application, votre espace, en une minute.</h1>
+  <p>Choisissez un nom, confirmez votre e-mail : votre espace <code>votre-nom.{{ PLATFORM_DOMAIN }}</code> est mis en service automatiquement, avec sa propre base de données, sur deux serveurs.</p>
+  <p><a class="btn big" href="{% url 'inscription' %}">Ouvrir mon espace</a></p>
+</section>
+<section class="cols">
+  <div>
+    <h2>Isolé</h2>
+    <p>Chaque client a son service, sa base PostgreSQL et son compte système. Aucune donnée partagée entre espaces.</p>
+  </div>
+  <div>
+    <h2>Redondé</h2>
+    <p>Deux serveurs, une base répliquée, un basculement sans changer d'adresse. Les mises à jour se font sans coupure.</p>
+  </div>
+  <div>
+    <h2>Sauvegardé</h2>
+    <p>Sauvegardes quotidiennes de chaque base, restauration client par client.</p>
+  </div>
+</section>
+{% endblock %}

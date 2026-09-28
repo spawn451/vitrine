@@ -1,0 +1,26 @@
+{% extends "guichet/base.html" %}
+{% block title %}Se connecter — GemLogic{% endblock %}
+{% block content %}
+<h1>Se connecter</h1>
+<p>La connexion se fait sur votre espace, avec votre mot de passe. Indiquez votre e-mail : nous vous y envoyons.</p>
+<form method="post" class="card" novalidate>
+  {% csrf_token %}
+  {% for field in form %}
+  <p>
+    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+    {{ field }}
+    {% if field.errors %}<span class="errors">{{ field.errors }}</span>{% endif %}
+  </p>
+  {% endfor %}
+  {% if espaces is not None %}
+    {% if espaces|length > 1 %}
+    <p>Plusieurs espaces sont rattachés à cette adresse :</p>
+    <ul>{% for e in espaces %}<li><a href="{{ e.url }}login/">{{ e.domain }}</a></li>{% endfor %}</ul>
+    {% elif not espaces %}
+    <p class="errors">Aucun espace prêt n'est rattaché à cette adresse. Si vous venez de vous inscrire, cliquez sur le lien reçu par e-mail.</p>
+    {% endif %}
+  {% endif %}
+  <p><button class="btn big" type="submit">Aller à mon espace</button></p>
+</form>
+<p class="muted">Vous connaissez votre adresse ? Allez directement sur <code>votre-nom.{{ PLATFORM_DOMAIN }}/login/</code>. Mot de passe oublié : depuis votre espace.</p>
+{% endblock %}

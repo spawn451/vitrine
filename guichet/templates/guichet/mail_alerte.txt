@@ -1,0 +1,10 @@
+Le workflow onboard-client a échoué pour une inscription.
+
+Espace      : {{ r.slug }} ({{ r.domain }})
+E-mail      : {{ r.email }}
+Workflow    : {{ awx_url }}/#/jobs/workflow/{{ r.workflow_job_id }}
+Détail      : {{ detail }}
+Confirmé le : {{ r.confirmed_at|date:"Y-m-d H:i" }}
+
+Le visiteur a vu « la mise en service a échoué, nous revenons vers vous ».
+Reprendre à la main : guide-ajout-client §4 (le client est peut-être déjà dans clients.yml).

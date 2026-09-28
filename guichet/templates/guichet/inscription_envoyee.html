@@ -1,0 +1,10 @@
+{% extends "guichet/base.html" %}
+{% block title %}Confirmez votre e-mail — GemLogic{% endblock %}
+{% block content %}
+<h1>Un e-mail vient de partir</h1>
+<div class="card">
+  <p>Nous avons envoyé un lien de confirmation à <strong>{{ r.email }}</strong>.</p>
+  <p>Le nom <code>{{ r.domain }}</code> est réservé pour vous jusqu'au {{ r.expires_at|date:"j F à H:i" }}. Au clic sur le lien, votre espace est mis en service en une minute environ.</p>
+  <p class="muted">Rien reçu ? Regardez dans les indésirables, ou <a href="{% url 'inscription' %}">recommencez</a> après expiration de la réservation.</p>
+</div>
+{% endblock %}

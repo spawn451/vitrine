@@ -1,0 +1,9 @@
+Bonjour,
+
+Votre espace est prêt : {{ r.url }}
+
+Connectez-vous sur {{ r.url }}login/ avec cette adresse e-mail ({{ r.email }}) et le mot de passe choisi à l'inscription.
+
+Mot de passe oublié : depuis la page de connexion de votre espace.
+
+GemLogic

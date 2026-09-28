@@ -1,0 +1,9 @@
+{% extends "guichet/base.html" %}
+{% block title %}Réessayez dans un instant — GemLogic{% endblock %}
+{% block content %}
+<h1>Réessayez dans un instant</h1>
+<div class="card">
+  <p>Votre adresse est confirmée, mais la mise en service de <code>{{ r.domain }}</code> n'a pas pu être lancée tout de suite.</p>
+  <p>Votre réservation est conservée : <strong>rouvrez le même lien</strong> dans quelques minutes, il fonctionnera.</p>
+</div>
+{% endblock %}

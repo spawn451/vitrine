@@ -1,0 +1,11 @@
+# /etc/systemd/system/vitrine-purge.timer — systemctl enable --now vitrine-purge.timer
+[Unit]
+Description=Vitrine : purge horaire des réservations expirées
+
+[Timer]
+OnCalendar=hourly
+RandomizedDelaySec=5min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

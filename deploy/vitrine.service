@@ -1,0 +1,25 @@
+# /etc/systemd/system/vitrine.service
+[Unit]
+Description=Gunicorn vitrine (guichet d'inscription)
+After=network.target postgresql.service
+
+[Service]
+User=vitrine
+Group=www-data
+RuntimeDirectory=vitrine
+WorkingDirectory=/var/www/vitrine/src
+EnvironmentFile=/var/www/vitrine/.env
+ExecStart=/var/www/vitrine/venv/bin/gunicorn \
+    --workers ${GUNICORN_WORKERS} \
+    --bind unix:/run/vitrine/vitrine.sock \
+    --graceful-timeout 30 \
+    config.wsgi:application
+# Comme sur la plateforme : SIGHUP recharge le code sans coupure.
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=35
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

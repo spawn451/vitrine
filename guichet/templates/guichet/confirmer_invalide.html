@@ -1,0 +1,16 @@
+{% extends "guichet/base.html" %}
+{% block title %}Lien invalide — GemLogic{% endblock %}
+{% block content %}
+<h1>Ce lien ne peut pas être utilisé</h1>
+<div class="card">
+  {% if raison == "expire" %}
+  <p>La réservation de <code>{{ r.domain }}</code> a expiré : le lien de confirmation était valable 24 h.</p>
+  <p>Le nom est de nouveau libre. <a href="{% url 'inscription' %}">Recommencer l'inscription</a>.</p>
+  {% elif raison == "non_confirme" %}
+  <p>L'espace <code>{{ r.domain }}</code> attend encore la confirmation de l'adresse e-mail. Cliquez sur le lien reçu par e-mail.</p>
+  {% else %}
+  <p>Le lien est incomplet ou n'a pas été émis par ce site.</p>
+  <p><a href="{% url 'inscription' %}">Retour à l'inscription</a>.</p>
+  {% endif %}
+</div>
+{% endblock %}

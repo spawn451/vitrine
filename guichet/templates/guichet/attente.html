@@ -1,0 +1,56 @@
+{% extends "guichet/base.html" %}
+{% block title %}Votre espace se prépare — GemLogic{% endblock %}
+{% block content %}
+<h1 id="titre">{% if r.statut == "ready" %}Votre espace est prêt{% elif r.statut == "failed" %}Un problème est survenu{% else %}Votre espace se prépare{% endif %}</h1>
+<div class="card" id="attente" data-statut-url="{% url 'statut' r.slug %}" data-statut="{{ r.statut }}">
+  <p>Adresse de votre espace : <a href="{{ r.url }}"><code>{{ r.domain }}</code></a></p>
+  <p id="message">{{ r.message|default:"Mise en service en cours : base de données, application, adresse. Une minute environ." }}</p>
+  <p id="chrono" class="muted"></p>
+  <p id="lien" {% if r.statut != "ready" %}hidden{% endif %}><a class="btn big" id="lien-espace" href="{{ r.url }}">Entrer dans mon espace</a></p>
+</div>
+<p class="muted">Vous pouvez fermer cette page : vous recevrez aussi un e-mail quand l'espace sera prêt, et vous vous connecterez sur <code>{{ r.domain }}</code> avec l'e-mail et le mot de passe choisis.</p>
+{% endblock %}
+{% block scripts %}
+<script>
+(function () {
+  var box = document.getElementById("attente");
+  var titre = document.getElementById("titre");
+  var message = document.getElementById("message");
+  var chrono = document.getElementById("chrono");
+  var lien = document.getElementById("lien");
+  var lienEspace = document.getElementById("lien-espace");
+  var debut = Date.now();
+  var fini = box.dataset.statut === "ready" || box.dataset.statut === "failed";
+
+  function tic() {
+    var s = Math.round((Date.now() - debut) / 1000);
+    chrono.textContent = fini ? "" : "Attente : " + s + " s";
+  }
+
+  function interroger() {
+    fetch(box.dataset.statutUrl, {headers: {"Accept": "application/json"}, cache: "no-store"})
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (d.message) { message.textContent = d.message; }
+        if (d.statut === "ready") {
+          fini = true;
+          titre.textContent = "Votre espace est prêt";
+          message.textContent = "Vous allez être connecté à votre espace.";
+          lienEspace.href = d.sso_url || d.url;
+          lien.hidden = false;
+          window.location.href = d.sso_url || d.url;
+        } else if (d.statut === "failed") {
+          fini = true;
+          titre.textContent = "Un problème est survenu";
+        } else {
+          setTimeout(interroger, 3000);
+        }
+      })
+      .catch(function () { setTimeout(interroger, 5000); });
+  }
+
+  setInterval(tic, 1000);
+  if (!fini) { interroger(); }
+})();
+</script>
+{% endblock %}

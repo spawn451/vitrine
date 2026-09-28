@@ -1,0 +1,15 @@
+{% extends "guichet/base.html" %}
+{% block title %}L'offre — GemLogic{% endblock %}
+{% block content %}
+<h1>L'offre</h1>
+<p>Un espace par client, à l'adresse <code>votre-nom.{{ PLATFORM_DOMAIN }}</code>, prêt en une minute après confirmation de votre e-mail.</p>
+<table>
+  <tr><th>Ce que vous obtenez</th><th>Comment</th></tr>
+  <tr><td>Votre application, à jour</td><td>Version {{ app_version|default:"courante" }} à l'ouverture ; mises à jour sans coupure.</td></tr>
+  <tr><td>Vos données à vous</td><td>Une base PostgreSQL par espace, jamais partagée.</td></tr>
+  <tr><td>Toujours joignable</td><td>Deux serveurs, réplication, basculement automatique de l'entrée réseau.</td></tr>
+  <tr><td>Sauvegardé</td><td>Sauvegardes quotidiennes, restauration espace par espace.</td></tr>
+  <tr><td>Votre compte</td><td>L'e-mail et le mot de passe choisis à l'inscription ouvrent votre espace ; la connexion se fait sur votre adresse, pas ici.</td></tr>
+</table>
+<p><a class="btn big" href="{% url 'inscription' %}">Ouvrir mon espace</a></p>
+{% endblock %}

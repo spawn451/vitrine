@@ -1,0 +1,13 @@
+Bonjour,
+
+Vous avez demandé l'ouverture de l'espace {{ r.domain }}.
+
+Pour confirmer votre adresse et lancer la mise en service, ouvrez ce lien :
+
+{{ confirm_url }}
+
+Il est valable {{ hours }} h. Passé ce délai, le nom est libéré et il faudra recommencer.
+
+Si vous n'êtes pas à l'origine de cette demande, ignorez ce message : rien ne sera créé.
+
+GemLogic

@@ -1,0 +1,11 @@
+# /etc/systemd/system/vitrine-purge.service — libère les noms réservés jamais confirmés
+[Unit]
+Description=Vitrine : purge des réservations expirées
+
+[Service]
+Type=oneshot
+User=vitrine
+Group=www-data
+WorkingDirectory=/var/www/vitrine/src
+EnvironmentFile=/var/www/vitrine/.env
+ExecStart=/var/www/vitrine/venv/bin/python manage.py purge_reservations
