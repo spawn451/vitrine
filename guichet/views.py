@@ -39,6 +39,14 @@ def offre(request):
     return render(request, "guichet/offre.html", {"app_version": settings.APP_VERSION})
 
 
+def conditions(request):
+    return render(request, "guichet/conditions.html")
+
+
+def confidentialite(request):
+    return render(request, "guichet/confidentialite.html", {"hours": settings.RESERVATION_HOURS})
+
+
 @require_GET
 def health(request):
     """Route de supervision : 200 seulement si la base répond."""
@@ -57,13 +65,14 @@ def health(request):
 def inscription(request):
     """Réserve le nom 24 h, hache le mot de passe, envoie le lien de confirmation.
     Rien n'est créé sur les serveurs ici."""
-    form = InscriptionForm(request.POST or None, platform_domain=settings.PLATFORM_DOMAIN)
+    form = InscriptionForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
         slug = form.cleaned_data["slug"]
         # Une ancienne réservation expirée du même nom libère la place.
         Reservation.objects.filter(slug=slug, statut=Statut.PENDING, expires_at__lte=timezone.now()).delete()
         r = Reservation.objects.create(
             slug=slug,
+            nom=form.cleaned_data["nom"],
             email=form.cleaned_data["email"],
             password_hash=make_password(form.cleaned_data["password"]),
             expires_at=Reservation.default_expiry(),

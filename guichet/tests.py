@@ -27,7 +27,7 @@ SETTINGS = dict(
     OPERATOR_EMAIL="exploitant@example.test",
 )
 
-FORM = {"slug": "client1", "email": "Alice@Example.test", "password": "un-bon-mot-de-passe", "password2": "un-bon-mot-de-passe"}
+FORM = {"nom": "  Alice   Martin ", "slug": "client1", "email": "Alice@Example.test", "password": "un-bon-mot-de-passe"}
 
 
 def _reponse(payload, status=200):
@@ -57,6 +57,7 @@ class InscriptionTests(TestCase):
         self.assertContains(r, "Un e-mail vient de partir")
         res = Reservation.objects.get(slug="client1")
         self.assertEqual(res.email, "alice@example.test")
+        self.assertEqual(res.nom, "Alice Martin")
         self.assertEqual(res.statut, "pending")
         self.assertTrue(res.password_hash.startswith("pbkdf2_") or res.password_hash.startswith("argon2"))
         self.assertEqual(len(mail.outbox), 1)
@@ -70,10 +71,23 @@ class InscriptionTests(TestCase):
         self.assertEqual(Reservation.objects.count(), 1)
 
     def test_nom_reserve_et_mot_de_passe_faible(self):
-        r = self.client.post(reverse("inscription"), {**FORM, "slug": "gemlogic", "password": "court", "password2": "court"})
+        r = self.client.post(reverse("inscription"), {**FORM, "slug": "gemlogic", "password": "court"})
         self.assertContains(r, "réservé")
         self.assertContains(r, "trop court")
         self.assertEqual(Reservation.objects.count(), 0)
+
+    def test_nom_obligatoire(self):
+        r = self.client.post(reverse("inscription"), {**FORM, "nom": "   "})
+        self.assertContains(r, "Ce champ est obligatoire")
+        self.assertEqual(Reservation.objects.count(), 0)
+
+    def test_page_inscription_et_pages_legales(self):
+        r = self.client.get(reverse("inscription"))
+        self.assertContains(r, "Créer un compte GemLogic")
+        self.assertContains(r, "Aucune carte bancaire requise")
+        self.assertContains(r, 'data-domain="lovelyhome.io"')
+        for name in ("conditions", "confidentialite"):
+            self.assertEqual(self.client.get(reverse(name)).status_code, 200)
 
     def test_reservation_expiree_liberee(self):
         Reservation.objects.create(slug="client1", email="x@y.test", expires_at=timezone.now() - timedelta(minutes=1))

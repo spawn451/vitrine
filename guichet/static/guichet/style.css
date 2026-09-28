@@ -23,6 +23,36 @@ small { display: block; color: var(--muted); margin-top: .25rem; }
 .slug-row input { flex: 1; }
 .slug-row .prefix, .slug-row .suffix { color: var(--muted); white-space: nowrap; }
 .errors { color: #b91c1c; }
+
+/* Formulaire de création de compte */
+.signup { max-width: 440px; margin: 1.5rem auto 3rem; }
+.signup h1 { font-size: 1.85rem; margin-bottom: .35rem; }
+.signup .lead { color: var(--muted); margin: 0 0 1.5rem; }
+.signup form p { margin: 0 0 1.1rem; }
+.signup label { font-weight: 600; margin-bottom: .4rem; }
+.signup input { padding: .7rem .85rem; border-radius: 8px; border-color: #d1d5db; }
+.signup input:focus { outline: none; border-color: var(--ink); box-shadow: 0 0 0 3px rgba(31, 36, 48, .12); }
+.signup .btn.primary { display: block; width: 100%; background: var(--ink); padding: .85rem 1rem; border-radius: 10px; font-size: 1.05rem; font-weight: 600; margin-top: .5rem; }
+.signup .btn.primary:hover { background: #0f1420; }
+.signup .center { text-align: center; }
+.signup .fine { color: var(--muted); font-size: .85rem; }
+.signup a { color: var(--accent); }
+.signup #slug-preview { white-space: nowrap; }
+.pwd-row { position: relative; display: block; }
+.pwd-row input { padding-right: 2.75rem; }
+.pwd-row .eye { position: absolute; right: .35rem; top: 50%; transform: translateY(-50%); border: 0; background: none; padding: .4rem; color: var(--muted); cursor: pointer; line-height: 0; border-radius: 6px; }
+.pwd-row .eye:hover { color: var(--ink); }
+.strength { display: block; margin-top: .5rem; }
+.strength .bars { display: grid; grid-template-columns: repeat(4, 1fr); gap: .35rem; }
+.strength .bars i { display: block; height: 5px; border-radius: 3px; background: var(--line); transition: background .2s; }
+.strength small { margin-top: .3rem; }
+.strength[data-score="1"] i:nth-child(-n+1) { background: #dc2626; }
+.strength[data-score="2"] i:nth-child(-n+2) { background: #f59e0b; }
+.strength[data-score="3"] i:nth-child(-n+3) { background: #d97706; }
+.strength[data-score="4"] i:nth-child(-n+4) { background: #16a34a; }
+.strength[data-score="1"] small { color: #dc2626; }
+.strength[data-score="2"] small, .strength[data-score="3"] small { color: #b45309; }
+.strength[data-score="4"] small { color: #15803d; }
 .errors ul { margin: .25rem 0; padding-left: 1.2rem; }
 table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
 th, td { text-align: left; padding: .6rem .75rem; border-bottom: 1px solid var(--line); vertical-align: top; }

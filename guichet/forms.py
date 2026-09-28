@@ -6,14 +6,13 @@ from .models import Reservation
 
 
 class InscriptionForm(forms.Form):
-    slug = forms.CharField(label="Nom de votre espace", max_length=31)
-    email = forms.EmailField(label="Votre e-mail")
-    password = forms.CharField(label="Mot de passe", widget=forms.PasswordInput, strip=False)
-    password2 = forms.CharField(label="Mot de passe (confirmation)", widget=forms.PasswordInput, strip=False)
+    nom = forms.CharField(label="Nom", max_length=80, widget=forms.TextInput(attrs={"autocomplete": "name", "autofocus": True}))
+    email = forms.EmailField(label="E-mail", widget=forms.EmailInput(attrs={"autocomplete": "email"}))
+    password = forms.CharField(label="Mot de passe", widget=forms.PasswordInput(attrs={"autocomplete": "new-password"}), strip=False)
+    slug = forms.CharField(label="Nom de l'espace de travail", max_length=31, widget=forms.TextInput(attrs={"autocomplete": "off", "spellcheck": "false"}))
 
-    def __init__(self, *args, platform_domain="", **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["slug"].help_text = f"Votre adresse sera https://<nom>.{platform_domain}/"
+    def clean_nom(self):
+        return " ".join(self.cleaned_data["nom"].split())
 
     def clean_slug(self):
         slug = slugs.normalize(self.cleaned_data["slug"])
@@ -31,12 +30,6 @@ class InscriptionForm(forms.Form):
         pwd = self.cleaned_data["password"]
         validate_password(pwd)
         return pwd
-
-    def clean(self):
-        data = super().clean()
-        if data.get("password") and data.get("password2") and data["password"] != data["password2"]:
-            self.add_error("password2", "Les deux mots de passe ne correspondent pas.")
-        return data
 
 
 class ConnexionForm(forms.Form):

@@ -1,24 +1,103 @@
 {% extends "guichet/base.html" %}
-{% block title %}Ouvrir mon espace — GemLogic{% endblock %}
+{% block title %}Créer un compte GemLogic{% endblock %}
 {% block content %}
-<h1>Ouvrir mon espace</h1>
-<p>Trois informations, puis un e-mail à confirmer. Votre espace est mis en service au clic sur le lien reçu.</p>
-<form method="post" class="card" novalidate>
-  {% csrf_token %}
-  {% if form.non_field_errors %}<div class="errors">{{ form.non_field_errors }}</div>{% endif %}
-  {% for field in form %}
-  <p>
-    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-    {% if field.name == "slug" %}
-    <span class="slug-row"><span class="prefix">https://</span>{{ field }}<span class="suffix">.{{ platform_domain }}</span></span>
-    {% else %}
-    {{ field }}
-    {% endif %}
-    {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
-    {% if field.errors %}<span class="errors">{{ field.errors }}</span>{% endif %}
-  </p>
-  {% endfor %}
-  <p><button class="btn big" type="submit">Réserver mon espace</button></p>
-</form>
-<p class="muted">Le nom est réservé pour vous pendant 24 h. Rien n'est créé avant la confirmation de votre e-mail.</p>
+<div class="signup">
+  <h1>Créer un compte GemLogic</h1>
+  <p class="lead">Essayez GemLogic gratuitement. Aucune carte bancaire requise.</p>
+  <form method="post" novalidate id="signup-form" data-domain="{{ platform_domain }}">
+    {% csrf_token %}
+    {% if form.non_field_errors %}<div class="errors">{{ form.non_field_errors }}</div>{% endif %}
+
+    <p>
+      <label for="{{ form.nom.id_for_label }}">{{ form.nom.label }}</label>
+      {{ form.nom }}
+      {% if form.nom.errors %}<span class="errors">{{ form.nom.errors }}</span>{% endif %}
+    </p>
+
+    <p>
+      <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+      {{ form.email }}
+      {% if form.email.errors %}<span class="errors">{{ form.email.errors }}</span>{% endif %}
+    </p>
+
+    <p>
+      <label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+      <span class="pwd-row">
+        {{ form.password }}
+        <button type="button" class="eye" id="toggle-pwd" aria-label="Afficher le mot de passe" aria-pressed="false">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </span>
+      <span class="strength" id="strength" aria-live="polite">
+        <span class="bars"><i></i><i></i><i></i><i></i></span>
+        <small id="strength-label">Au moins 10 caractères</small>
+      </span>
+      {% if form.password.errors %}<span class="errors">{{ form.password.errors }}</span>{% endif %}
+    </p>
+
+    <p>
+      <label for="{{ form.slug.id_for_label }}">{{ form.slug.label }}</label>
+      {{ form.slug }}
+      <small>Nous créons votre sous-domaine automatiquement : <strong id="slug-preview">&lt;nom&gt;.{{ platform_domain }}</strong></small>
+      {% if form.slug.errors %}<span class="errors">{{ form.slug.errors }}</span>{% endif %}
+    </p>
+
+    <p><button class="btn primary" type="submit">Continuer <span aria-hidden="true">→</span></button></p>
+
+    <p class="center">Vous avez déjà un compte GemLogic ? <a href="{% url 'connexion' %}">Se connecter</a></p>
+    <p class="center fine">En continuant, vous acceptez les <a href="{% url 'conditions' %}">Conditions d'utilisation</a> et la <a href="{% url 'confidentialite' %}">Politique de confidentialité</a>.</p>
+  </form>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+(function () {
+  var form = document.getElementById("signup-form");
+  var domain = form.dataset.domain;
+  var nom = document.getElementById("{{ form.nom.id_for_label }}");
+  var pwd = document.getElementById("{{ form.password.id_for_label }}");
+  var slug = document.getElementById("{{ form.slug.id_for_label }}");
+  var preview = document.getElementById("slug-preview");
+  var strength = document.getElementById("strength");
+  var label = document.getElementById("strength-label");
+  var slugTouched = slug.value !== "";
+
+  // Même normalisation que guichet/slugs.py : minuscules, [a-z0-9-], commence par une lettre.
+  function toSlug(s) {
+    s = s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    s = s.replace(/[^a-z0-9-]+/g, "-").replace(/-+/g, "-").replace(/^[^a-z]+/, "").replace(/-$/, "");
+    return s.slice(0, 31);
+  }
+  function showPreview() {
+    var v = slug.value.trim().toLowerCase();
+    preview.textContent = (v || "<nom>") + "." + domain;
+  }
+  nom.addEventListener("input", function () {
+    if (!slugTouched) { slug.value = toSlug(nom.value); showPreview(); }
+  });
+  slug.addEventListener("input", function () { slugTouched = slug.value !== ""; showPreview(); });
+  showPreview();
+
+  // Indicateur de robustesse : 4 barres. Indicatif seulement, la règle est côté serveur.
+  var labels = ["Au moins 10 caractères", "Mot de passe faible", "Mot de passe moyen", "Bon mot de passe", "Excellent mot de passe"];
+  pwd.addEventListener("input", function () {
+    var v = pwd.value, score = 0;
+    if (v.length >= 10) score++;
+    if (v.length >= 14) score++;
+    if (/[a-z]/.test(v) && /[A-Z]/.test(v)) score++;
+    if (/\d/.test(v) && /[^A-Za-z0-9]/.test(v)) score++;
+    if (v.length < 10) score = Math.min(score, 0);
+    strength.dataset.score = score;
+    label.textContent = labels[score];
+  });
+
+  document.getElementById("toggle-pwd").addEventListener("click", function () {
+    var shown = pwd.type === "text";
+    pwd.type = shown ? "password" : "text";
+    this.setAttribute("aria-pressed", String(!shown));
+    this.setAttribute("aria-label", shown ? "Afficher le mot de passe" : "Masquer le mot de passe");
+    pwd.focus();
+  });
+})();
+</script>
 {% endblock %}

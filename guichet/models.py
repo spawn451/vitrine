@@ -20,6 +20,7 @@ class Reservation(models.Model):
         FAILED = "failed", "Échec"
 
     slug = models.SlugField("nom d'espace", max_length=31, unique=True)
+    nom = models.CharField("nom du demandeur", max_length=80, blank=True)
     email = models.EmailField("e-mail")
     # make_password() du mot de passe choisi ; vidé à la confirmation.
     password_hash = models.CharField(max_length=128, blank=True)
