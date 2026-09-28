@@ -34,9 +34,6 @@ small { display: block; color: var(--muted); margin-top: .25rem; }
 .signup input:focus { outline: none; border-color: var(--ink); box-shadow: 0 0 0 3px rgba(31, 36, 48, .12); }
 .signup .btn.primary { display: block; width: 100%; background: var(--ink); padding: .85rem 1rem; border-radius: 10px; font-size: 1.05rem; font-weight: 600; margin-top: .5rem; }
 .signup .btn.primary:hover { background: #0f1420; }
-.signup .center { text-align: center; }
-.signup .fine { color: var(--muted); font-size: .85rem; }
-.signup a { color: var(--accent); }
 .signup #slug-preview { white-space: nowrap; }
 .pwd-row { position: relative; display: block; }
 .pwd-row input { padding-right: 2.75rem; }

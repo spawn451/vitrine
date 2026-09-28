@@ -81,13 +81,11 @@ class InscriptionTests(TestCase):
         self.assertContains(r, "Ce champ est obligatoire")
         self.assertEqual(Reservation.objects.count(), 0)
 
-    def test_page_inscription_et_pages_legales(self):
+    def test_page_inscription(self):
         r = self.client.get(reverse("inscription"))
         self.assertContains(r, "Créer un compte GemLogic")
         self.assertContains(r, "Aucune carte bancaire requise")
         self.assertContains(r, 'data-domain="lovelyhome.io"')
-        for name in ("conditions", "confidentialite"):
-            self.assertEqual(self.client.get(reverse(name)).status_code, 200)
 
     def test_reservation_expiree_liberee(self):
         Reservation.objects.create(slug="client1", email="x@y.test", expires_at=timezone.now() - timedelta(minutes=1))

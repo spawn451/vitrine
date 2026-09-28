@@ -38,15 +38,6 @@ def accueil(request):
 def offre(request):
     return render(request, "guichet/offre.html", {"app_version": settings.APP_VERSION})
 
-
-def conditions(request):
-    return render(request, "guichet/conditions.html")
-
-
-def confidentialite(request):
-    return render(request, "guichet/confidentialite.html", {"hours": settings.RESERVATION_HOURS})
-
-
 @require_GET
 def health(request):
     """Route de supervision : 200 seulement si la base répond."""

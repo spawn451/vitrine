@@ -21,7 +21,6 @@ tombe, personne n'est empêché de se connecter à son espace.
 | Route | Rôle |
 |---|---|
 | `/`, `/offre/` | Pages vitrine (contenu à remplacer) |
-| `/conditions/`, `/confidentialite/` | Pages légales liées depuis le formulaire (texte provisoire à compléter) |
 | `/inscription/` | « Créer un compte » : nom, e-mail, mot de passe (indicateur de robustesse, œil), nom d'espace suggéré depuis le nom. Réserve le nom 24 h, hache le mot de passe, envoie le lien de confirmation |
 | `/confirmer/<token>/` | Le clic dans l'e-mail : lance le workflow AWX, efface le hash, redirige vers l'attente |
 | `/attente/<slug>/` | « Votre espace se prépare » ; interroge `/statut/` toutes les 3 s |
