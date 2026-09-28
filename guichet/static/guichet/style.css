@@ -35,6 +35,8 @@ small { display: block; color: var(--muted); margin-top: .25rem; }
 .signup .btn.primary { display: block; width: 100%; background: var(--ink); padding: .85rem 1rem; border-radius: 10px; font-size: 1.05rem; font-weight: 600; margin-top: .5rem; }
 .signup .btn.primary:hover { background: #0f1420; }
 .signup #slug-preview { white-space: nowrap; }
+.signup input.invalid { border-color: #dc2626; box-shadow: 0 0 0 3px rgba(220, 38, 38, .12); }
+.signup .field-error { display: block; color: #b91c1c; font-size: .85rem; margin-top: .35rem; }
 .pwd-row { position: relative; display: block; }
 .pwd-row input { padding-right: 2.75rem; }
 .pwd-row .eye { position: absolute; right: .35rem; top: 50%; transform: translateY(-50%); border: 0; background: none; padding: .4rem; color: var(--muted); cursor: pointer; line-height: 0; border-radius: 6px; }

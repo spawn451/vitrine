@@ -11,13 +11,13 @@
     <p>
       <label for="{{ form.nom.id_for_label }}">{{ form.nom.label }}</label>
       {{ form.nom }}
-      {% if form.nom.errors %}<span class="errors">{{ form.nom.errors }}</span>{% endif %}
+      {% if form.nom.errors %}<span class="field-error">{{ form.nom.errors.0 }}</span>{% endif %}
     </p>
 
     <p>
       <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
       {{ form.email }}
-      {% if form.email.errors %}<span class="errors">{{ form.email.errors }}</span>{% endif %}
+      {% if form.email.errors %}<span class="field-error">{{ form.email.errors.0 }}</span>{% endif %}
     </p>
 
     <p>
@@ -32,14 +32,14 @@
         <span class="bars"><i></i><i></i><i></i><i></i></span>
         <small id="strength-label">Au moins 10 caractères</small>
       </span>
-      {% if form.password.errors %}<span class="errors">{{ form.password.errors }}</span>{% endif %}
+      {% if form.password.errors %}<span class="field-error">{{ form.password.errors.0 }}</span>{% endif %}
     </p>
 
     <p>
       <label for="{{ form.slug.id_for_label }}">{{ form.slug.label }}</label>
       {{ form.slug }}
       <small>Nous créons votre sous-domaine automatiquement : <strong id="slug-preview">&lt;nom&gt;.{{ platform_domain }}</strong></small>
-      {% if form.slug.errors %}<span class="errors">{{ form.slug.errors }}</span>{% endif %}
+      {% if form.slug.errors %}<span class="field-error">{{ form.slug.errors.0 }}</span>{% endif %}
     </p>
 
     <p><button class="btn primary" type="submit">Continuer <span aria-hidden="true">→</span></button></p>
@@ -86,6 +86,42 @@
     if (v.length < 10) score = Math.min(score, 0);
     strength.dataset.score = score;
     label.textContent = labels[score];
+  });
+
+  // Validation affichée sous le champ, à la place de l'infobulle du navigateur.
+  var messages = { valueMissing: "Veuillez renseigner ce champ.", typeMismatch: "Saisissez une adresse e-mail valide." };
+  function showError(input, text) {
+    var span = input.closest("p").querySelector(".field-error");
+    if (!span) {
+      span = document.createElement("span");
+      span.className = "field-error";
+      var field = input.closest("p");
+      var anchor = field.querySelector(".strength");
+      field.insertBefore(span, anchor ? anchor.nextSibling : input.nextSibling);
+    }
+    span.textContent = text;
+    input.classList.add("invalid");
+  }
+  function clearError(input) {
+    var span = input.closest("p").querySelector(".field-error");
+    if (span) span.remove();
+    input.classList.remove("invalid");
+  }
+  form.addEventListener("submit", function (ev) {
+    var first = null;
+    form.querySelectorAll("input").forEach(function (input) {
+      var v = input.validity;
+      if (v.valueMissing || v.typeMismatch) {
+        showError(input, v.typeMismatch ? messages.typeMismatch : messages.valueMissing);
+        if (!first) first = input;
+      } else {
+        clearError(input);
+      }
+    });
+    if (first) { ev.preventDefault(); first.focus(); }
+  });
+  form.querySelectorAll("input").forEach(function (input) {
+    input.addEventListener("input", function () { if (input.classList.contains("invalid")) clearError(input); });
   });
 
   document.getElementById("toggle-pwd").addEventListener("click", function () {
