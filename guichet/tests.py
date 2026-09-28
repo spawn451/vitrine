@@ -206,6 +206,13 @@ class SuiviTests(TestCase):
     def test_callback_workflow_inconnu(self):
         self.assertEqual(self._callback("successful", job_id=999).status_code, 204)
 
+    def test_callback_test_awx_sans_id(self):
+        """Le bouton Test d'AWX envoie un message générique : 204 si le secret est bon."""
+        r = self.client.post(self.callback, data=json.dumps({"body": "Ansible Tower Test Notification"}), content_type="application/json", headers={"X-Vitrine-Secret": "callback-secret"})
+        self.assertEqual(r.status_code, 204)
+        self.res.refresh_from_db()
+        self.assertEqual(self.res.statut, "provisioning")
+
     def test_attente_page(self):
         r = self.client.get(reverse("attente", args=["client1"]))
         self.assertContains(r, "client1.lovelyhome.io")

@@ -13,7 +13,7 @@ import smtplib
 from django.conf import settings
 from django.contrib.auth.hashers import make_password
 from django.db import DatabaseError
-from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, JsonResponse
+from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -174,8 +174,10 @@ def _apply_awx_status(r):
 @require_POST
 def awx_callback(request):
     """Notification webhook d'AWX (succès et échec du workflow). Le corps est le
-    JSON du workflow_job : on lit id et status. Répond 204 dans tous les cas
-    où la requête est authentique, pour qu'AWX ne réessaie pas."""
+    JSON du workflow_job : on lit id et status. Toute requête authentique
+    (bon secret) reçoit 204, même sans id exploitable : le bouton « Test »
+    d'AWX envoie un message générique, et un 204 lui suffit pour afficher
+    « succès », ce qui prouve connectivité et secret."""
     secret = settings.AWX_CALLBACK_SECRET
     given = request.headers.get("X-Vitrine-Secret", "")
     if not secret or not hmac.compare_digest(given, secret):
@@ -185,7 +187,8 @@ def awx_callback(request):
         job_id = int(body["id"])
         status = str(body.get("status", ""))
     except (ValueError, KeyError, TypeError):
-        return HttpResponseBadRequest("id et status attendus")
+        log.info("callback AWX sans id de workflow (test ?) : %.200s", request.body)
+        return HttpResponse(status=204)
     r = Reservation.objects.filter(workflow_job_id=job_id).first()
     if r is None:
         log.info("callback AWX pour un workflow inconnu : %s", job_id)
