@@ -72,8 +72,8 @@ sudo cp /var/www/vitrine/src/.env.example /var/www/vitrine/.env   # puis renseig
 sudo chown vitrine:www-data /var/www/vitrine/.env && sudo chmod 640 /var/www/vitrine/.env
 
 cd /var/www/vitrine/src
-sudo -u vitrine env $(grep -v '^#' ../.env | xargs) ../venv/bin/python manage.py migrate
-sudo -u vitrine env $(grep -v '^#' ../.env | xargs) ../venv/bin/python manage.py collectstatic --noinput
+sudo -u vitrine deploy/manage.sh migrate               # manage.sh charge le .env puis lance manage.py dans le venv
+sudo -u vitrine deploy/manage.sh collectstatic --noinput
 
 sudo cp deploy/vitrine.service deploy/vitrine-purge.service deploy/vitrine-purge.timer /etc/systemd/system/
 sudo systemctl daemon-reload
@@ -149,7 +149,7 @@ vers la vitrine :
 ## Exploitation
 
 ```bash
-cd /var/www/vitrine/src && sudo -u vitrine env $(grep -v '^#' ../.env | xargs) ../venv/bin/python manage.py reservations
+sudo -u vitrine /var/www/vitrine/src/deploy/manage.sh reservations
 ```
 
 Liste l'annuaire (nom, statut, e-mail, id du workflow, message). Un échec de
